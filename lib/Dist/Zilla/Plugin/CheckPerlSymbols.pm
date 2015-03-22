@@ -152,7 +152,10 @@ In your F<dist.ini>:
 
     [CheckPerlSymbols]
     has_symbol = pthread_self
-    ; except on a particular platform, $^O matching /bsd$/perhaps:
+
+.. or disallow a symbol on a particular platform, $^O matching /bsd$/perhaps:
+
+    [CheckPerlSymbols]
     lacks_symbol = pthread_self bsd$
 
 =head1 DESCRIPTION
