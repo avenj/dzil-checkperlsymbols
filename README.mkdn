@@ -9,10 +9,10 @@ In your `dist.ini`:
     [CheckPerlSymbols]
     has_symbol = pthread_self
 
-.. or disallow a symbol on a particular platform, $^O matching /bsd$/perhaps:
+.. or (dis)allow a symbol dependent on a string of code, $^O matching /bsd$/i perhaps:
 
     [CheckPerlSymbols]
-    lacks_symbol = pthread_self bsd$
+    lacks_symbol = pthread_self $^O =~ /bsd$/i
 
 # DESCRIPTION
 
@@ -25,27 +25,26 @@ interactions.
 
 # CONFIGURATION OPTIONS
 
-## `has_symbol`
+## has\_symbol
 
 The name of a required symbol.
 
 Can be specified more than once.
 
-If a second parameter is given, it is taken as a pattern to be matched against
-`$^O`; the symbol will only be required if the installing system matches.
+If additional parameters are given, they are taken as a Perl expression; if
+the given expression returns false, the symbol is not checked.
 
-## `lacks_symbol`
+## lacks\_symbol
 
-The name of a conflicting symbol.
+The name of a conflicting symbol; shares the same behavior regarding
+additional parameters as ["has\_symbol"](#has_symbol)
 
 Can be specified more than once.
 
-If a second parameter is given, it is taken as a pattern to be matched against
-`$^O`; the symbol will only be disallowed if the installing system matches.
-
 # AUTHOR
 
-Jon Portnoy <avenj@cobaltirc.org>
+Jon Portnoy <avenj@cobaltirc.org> based on suggestions and contributions by
+Dylan Cali (CPAN: CALID).
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
