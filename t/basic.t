@@ -19,8 +19,8 @@ my $tzil = Builder->from_config(
                 [ MetaConfig => ],
                 [ 'MakeMaker' => ],
                 [ 'CheckPerlSymbols' => {
-                        has_symbol => [ 'foo linux', 'bar' ],
-                        lacks_symbol => 'baz BSD$',
+                        has_symbol => [ 'foo $^O eq "linux"', 'bar' ],
+                        lacks_symbol => 'baz $^O =~ /bsd$/i',
                     },
                 ],
             ),
@@ -53,13 +53,13 @@ use warnings;
 use FFI::Platypus;
 my \$ffi = FFI::Platypus->new;
 \$ffi->lib(undef);
-if (\$^O =~ /linux/ && !\$ffi->find_symbol('foo')) {
+if (\$^O eq "linux" && !\$ffi->find_symbol('foo')) {
   warn "Required native symbol 'foo' not found in running perl; installation can't continue.\\n"; exit
 }
 unless (\$ffi->find_symbol('bar')) {
   warn "Required native symbol 'bar' not found in running perl; installation can't continue.\\n"; exit
 }
-if (\$^O =~ /BSD\$/ && \$ffi->find_symbol('baz')) {
+if (\$^O =~ /bsd\$/i && \$ffi->find_symbol('baz')) {
   warn "Conflicting native symbol 'baz' found in running perl; installation can't continue.\\n"; exit
 }
 PATTERN
@@ -88,8 +88,8 @@ cmp_deeply(
                     class => 'Dist::Zilla::Plugin::CheckPerlSymbols',
                     config => {
                         'Dist::Zilla::Plugin::CheckPerlSymbols' => superhashof({
-                            has_symbol   => [ 'foo linux', 'bar' ],
-                            lacks_symbol => [ 'baz BSD$' ],
+                            has_symbol   => [ 'foo $^O eq "linux"', 'bar' ],
+                            lacks_symbol => [ 'baz $^O =~ /bsd$/i' ],
                         }),
                     },
                     name => 'CheckPerlSymbols',

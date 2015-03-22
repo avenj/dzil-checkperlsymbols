@@ -1,6 +1,6 @@
 # NAME
 
-Dist::Zilla::Plugin::CheckPerlSymbols - Check currently running interpreter for symbols
+Dist::Zilla::Plugin::CheckPerlSymbols - Check currently running interpreter for C symbols
 
 # SYNOPSIS
 
@@ -8,6 +8,11 @@ In your `dist.ini`:
 
     [CheckPerlSymbols]
     has_symbol = pthread_self
+
+.. or disallow a symbol on a particular platform, $^O matching /bsd$/perhaps:
+
+    [CheckPerlSymbols]
+    lacks_symbol = pthread_self bsd$
 
 # DESCRIPTION
 
@@ -26,11 +31,17 @@ The name of a required symbol.
 
 Can be specified more than once.
 
+If a second parameter is given, it is taken as a pattern to be matched against
+`$^O`; the symbol will only be required if the installing system matches.
+
 ## `lacks_symbol`
 
 The name of a conflicting symbol.
 
 Can be specified more than once.
+
+If a second parameter is given, it is taken as a pattern to be matched against
+`$^O`; the symbol will only be disallowed if the installing system matches.
 
 # AUTHOR
 

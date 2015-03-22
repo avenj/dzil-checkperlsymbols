@@ -102,10 +102,10 @@ sub _munge_file {
   ;
 
   for my $item ($self->has_symbol) {
-    my ($sym, $platform) = split ' ', $item;
+    my ($sym, $skip_if) = split ' ', $item, 2;
     $insert .= 
-      ( $platform ? 
-        "if (\$^O =~ /$platform/ && !\$ffi->find_symbol('$sym')) {\n"
+      ( $skip_if ? 
+        "if ($skip_if && !\$ffi->find_symbol('$sym')) {\n"
         : "unless (\$ffi->find_symbol('$sym')) {\n"
       )
       . qq[  warn "Required native symbol '$sym' not found in running perl;]
@@ -115,10 +115,10 @@ sub _munge_file {
   }
 
   for my $item ($self->lacks_symbol) {
-    my ($sym, $platform) = split ' ', $item;
+    my ($sym, $skip_if) = split ' ', $item, 2;
     $insert .= 
-      ( $platform ?
-        "if (\$^O =~ /$platform/ && \$ffi->find_symbol('$sym')) {\n"
+      ( $skip_if ?
+        "if ($skip_if && \$ffi->find_symbol('$sym')) {\n"
         : "if (\$ffi->find_symbol('$sym')) {\n"
       )
       . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
@@ -144,7 +144,7 @@ __END__
 
 =head1 NAME
 
-Dist::Zilla::Plugin::CheckPerlSymbols - Check currently running interpreter for symbols
+Dist::Zilla::Plugin::CheckPerlSymbols - Check currently running interpreter for C symbols
 
 =head1 SYNOPSIS
 
@@ -153,10 +153,10 @@ In your F<dist.ini>:
     [CheckPerlSymbols]
     has_symbol = pthread_self
 
-.. or disallow a symbol on a particular platform, $^O matching /bsd$/perhaps:
+.. or (dis)allow a symbol dependent on a string of code, $^O matching /bsd$/i perhaps:
 
     [CheckPerlSymbols]
-    lacks_symbol = pthread_self bsd$
+    lacks_symbol = pthread_self $^O =~ /bsd$/i
 
 =head1 DESCRIPTION
 
@@ -169,27 +169,26 @@ interactions.
 
 =head1 CONFIGURATION OPTIONS
 
-=head2 C<has_symbol>
+=head2 has_symbol
 
 The name of a required symbol.
 
 Can be specified more than once.
 
-If a second parameter is given, it is taken as a pattern to be matched against
-C<$^O>; the symbol will only be required if the installing system matches.
+If additional parameters are given, they are taken as a Perl expression; if
+the given expression returns false, the symbol is not checked.
 
-=head2 C<lacks_symbol>
+=head2 lacks_symbol
 
-The name of a conflicting symbol.
+The name of a conflicting symbol; shares the same behavior regarding
+additional parameters as L</has_symbol>
 
 Can be specified more than once.
 
-If a second parameter is given, it is taken as a pattern to be matched against
-C<$^O>; the symbol will only be disallowed if the installing system matches.
-
 =head1 AUTHOR
 
-Jon Portnoy <avenj@cobaltirc.org>
+Jon Portnoy <avenj@cobaltirc.org> based on suggestions and contributions by
+Dylan Cali (CPAN: CALID).
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
