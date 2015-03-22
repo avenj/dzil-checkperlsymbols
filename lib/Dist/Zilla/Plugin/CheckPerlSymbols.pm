@@ -11,11 +11,6 @@ with
 
 use namespace::autoclean;
 
-# FIXME platform-specific checks using a pattern? e.g.:
-#   [CheckPerlSymbols]
-#   has_symbol = pthread_self BSD$
-#    -> wraps in (if $^O =~ /BSD$/) { ... }
-
 my @list_opts = qw/
   has_symbol
   lacks_symbol
