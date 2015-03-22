@@ -1,0 +1,40 @@
+# NAME
+
+Dist::Zilla::Plugin::CheckPerlSymbols - Check currently running interpreter for symbols
+
+# SYNOPSIS
+
+In your `dist.ini`:
+
+    [CheckPerlSymbols]
+    has_symbol = pthread_self
+
+# DESCRIPTION
+
+This is a [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla) plugin that modifies the `Makefile.PL` or
+`Build.PL` in your distribution to check for the presence (or lack) of
+specified C symbols in the running interpreter via [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus).
+
+This is useful for handling certain corner cases related to C-level
+interactions.
+
+# CONFIGURATION OPTIONS
+
+## `has_symbol`
+
+The name of a required symbol.
+
+Can be specified more than once.
+
+## `lacks_symbol`
+
+The name of a conflicting symbol.
+
+Can be specified more than once.
+
+# AUTHOR
+
+Jon Portnoy <avenj@cobaltirc.org>
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
