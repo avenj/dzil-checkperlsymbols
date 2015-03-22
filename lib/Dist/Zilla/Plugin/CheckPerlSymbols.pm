@@ -132,87 +132,45 @@ __END__
 
 =pod
 
+=for Pod::Coverage mvp_multivalue_args register_prereqs munge_files setup_installer
+
 =head1 NAME
 
-Dist::Zilla::Plugin::FFI::CheckLib - FFI::CheckLib alternative to Dist::Zilla::Plugin::CheckLib
+Dist::Zilla::Plugin::CheckPerlSymbols - Check currently running interpreter for symbols
 
 =head1 SYNOPSIS
 
 In your F<dist.ini>:
 
-    [FFI::CheckLib]
-    lib = zmq
+    [CheckPerlSymbols]
+    has_symbol = pthread_self
 
 =head1 DESCRIPTION
 
 This is a L<Dist::Zilla> plugin that modifies the F<Makefile.PL> or
-F<Build.PL> in your distribution to check for a dynamic library L<FFI::Raw> (or
-similar) can access; uses L<FFI::CheckLib> to perform the check.
+F<Build.PL> in your distribution to check for the presence (or lack) of
+specified C symbols in the running interpreter via L<FFI::Platypus>.
 
-If the library is not available, the program exits with a status of zero,
-which will result in a NA result on a CPAN test reporter.
-
-Derived from L<Dist::Zilla::Plugin::CheckLib> (see L</AUTHOR>) -- look there
-for non-FFI applications.
-
-=for Pod::Coverage mvp_multivalue_args register_prereqs munge_files setup_installer
+This is useful for handling certain corner cases related to C-level
+interactions.
 
 =head1 CONFIGURATION OPTIONS
 
-All options are as documented in L<FFI::CheckLib>:
+=head2 C<has_symbol>
 
-=head2 C<lib>
+The name of a required symbol.
 
-The name of a single dynamic library (for example, C<zmq>). 
-Can be used more than once.
+Can be specified more than once.
 
-L<FFI::CheckLib> will prepend C<lib> and append an appropriate dynamic library
-suffix as needed.
+=head2 C<lacks_symbol>
 
-=head2 C<symbol>
+The name of a conflicting symbol.
 
-A symbol that must be found. Can be used more than once.
-
-=head2 C<systempath>
-
-The system search path to use (instead of letting L<FFI::CheckLib> determine
-paths). Can be used more than once.
-
-=head2 C<libpath>
-
-Additional path to search for libraries. Can be used more than once.
-
-=head2 C<recursive>
-
-If set to true, directories specified in C<libpath> will be searched
-recursively.
-
-Defaults to false.
-
-=head1 SEE ALSO
-
-=over 4
-
-=item *
-
-L<FFI::CheckLib>
-
-=item *
-
-L<Devel::CheckLib> and L<Dist::Zilla::Plugin::CheckLib>
-
-=item *
-
-L<Devel::AssertOS> and L<Dist::Zilla::Plugin::AssertOS>
-
-=back
+Can be specified more than once.
 
 =head1 AUTHOR
 
-Ported to L<FFI::CheckLib> by Jon Portnoy <avenj@cobaltirc.org>
-
-This module is adapted directly from L<Dist::Zilla::Plugin::CheckLib>,
-copyright (c) 2014 by Karen Etheridge (CPAN: ETHER).
+Jon Portnoy <avenj@cobaltirc.org>
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
