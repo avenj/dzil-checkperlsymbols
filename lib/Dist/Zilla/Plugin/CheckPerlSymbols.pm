@@ -106,22 +106,43 @@ sub _munge_file {
     . '$ffi->lib(undef);' ."\n"
   ;
 
-  for my $sym ($self->has_symbol) {
-    $insert .= 
-        "unless (\$ffi->find_symbol('$sym')) {\n"
-      . qq[  warn "Required native symbol '$sym' not found in running perl;]
-      . qq[ installation can't continue.\\n"; exit\n]
-      . "}\n"
-    ; 
+  for my $item ($self->has_symbol) {
+    my ($sym, $platform) = split ' ', $item;
+    if ($platform) {
+       $insert .= 
+          "if (\$^O =~ /$platform/ && !\$ffi->find_symbol('$sym')) {\n"
+        . qq[  warn "Required native symbol '$sym' not found in running perl;]
+        . qq[ installation can't continue.\\n"; exit\n]
+        . "}\n"
+      ; 
+    } else {
+      $insert .= 
+          "unless (\$ffi->find_symbol('$sym')) {\n"
+        . qq[  warn "Required native symbol '$sym' not found in running perl;]
+        . qq[ installation can't continue.\\n"; exit\n]
+        . "}\n"
+      ; 
+    }
   }
 
-  for my $sym ($self->lacks_symbol) {
-    $insert .= 
-        "if (\$ffi->find_symbol('$sym')) {\n"
-      . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
-      . qq[ installation can't continue.\\n"; exit\n]
-      . "}\n"
-    ;
+  for my $item ($self->lacks_symbol) {
+    my ($sym, $platform) = split ' ', $item;
+    if ($platform) {
+      $insert .= 
+          "if (\$^O =~ /$platform/ && \$ffi->find_symbol('$sym')) {\n"
+        . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
+        . qq[ installation can't continue.\\n"; exit\n]
+        . "}\n"
+      ;
+
+    } else {
+      $insert .= 
+          "if (\$ffi->find_symbol('$sym')) {\n"
+        . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
+        . qq[ installation can't continue.\\n"; exit\n]
+        . "}\n"
+      ;
+    }
   }
   
   $insert .= "\n";
@@ -149,6 +170,8 @@ In your F<dist.ini>:
 
     [CheckPerlSymbols]
     has_symbol = pthread_self
+    ; except on a particular platform, $^O matching /bsd$/perhaps:
+    lacks_symbol = pthread_self bsd$
 
 =head1 DESCRIPTION
 
@@ -167,11 +190,17 @@ The name of a required symbol.
 
 Can be specified more than once.
 
+If a second parameter is given, it is taken as a pattern to be matched against
+C<$^O>; the symbol will only be required if the installing system matches.
+
 =head2 C<lacks_symbol>
 
 The name of a conflicting symbol.
 
 Can be specified more than once.
+
+If a second parameter is given, it is taken as a pattern to be matched against
+C<$^O>; the symbol will only be disallowed if the installing system matches.
 
 =head1 AUTHOR
 
