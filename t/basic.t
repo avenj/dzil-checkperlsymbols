@@ -54,13 +54,13 @@ use FFI::Platypus;
 my \$ffi = FFI::Platypus->new;
 \$ffi->lib(undef);
 unless (\$ffi->find_symbol('foo')) {
-  warn "This module needs missing symbol 'foo'\\n"; exit
+  warn "Required native symbol 'foo' not found in running perl; installation can't continue.\\n"; exit
 }
 unless (\$ffi->find_symbol('bar')) {
-  warn "This module needs missing symbol 'bar'\\n"; exit
+  warn "Required native symbol 'bar' not found in running perl; installation can't continue.\\n"; exit
 }
 if (\$ffi->find_symbol('baz')) {
-  warn "This module is incompatible with symbol 'baz'\\n"; exit
+  warn "Conflicting native symbol 'baz' found in running perl; installation can't continue.\\n"; exit
 }
 PATTERN
 

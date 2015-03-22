@@ -104,8 +104,8 @@ sub _munge_file {
   for my $sym ($self->has_symbol) {
     $insert .= 
         "unless (\$ffi->find_symbol('$sym')) {\n"
-      . qq[  warn "This module needs missing symbol '$sym'\\n";]
-      . " exit\n"
+      . qq[  warn "Required native symbol '$sym' not found in running perl;]
+      . qq[ installation can't continue.\\n"; exit\n]
       . "}\n"
     ; 
   }
@@ -113,8 +113,8 @@ sub _munge_file {
   for my $sym ($self->lacks_symbol) {
     $insert .= 
         "if (\$ffi->find_symbol('$sym')) {\n"
-      . qq[  warn "This module is incompatible with symbol '$sym'\\n";]
-      . " exit\n"
+      . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
+      . qq[ installation can't continue.\\n"; exit\n]
       . "}\n"
     ;
   }
