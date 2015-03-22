@@ -103,29 +103,27 @@ sub _munge_file {
 
   for my $item ($self->has_symbol) {
     my ($sym, $platform) = split ' ', $item;
-    $insert .= $platform ? 
+    $insert .= 
+      ( $platform ? 
         "if (\$^O =~ /$platform/ && !\$ffi->find_symbol('$sym')) {\n"
-        . qq[  warn "Required native symbol '$sym' not found in running perl;]
-        . qq[ installation can't continue.\\n"; exit\n]
-        . "}\n"
-      : "unless (\$ffi->find_symbol('$sym')) {\n"
-        . qq[  warn "Required native symbol '$sym' not found in running perl;]
-        . qq[ installation can't continue.\\n"; exit\n]
-        . "}\n"
+        : "unless (\$ffi->find_symbol('$sym')) {\n"
+      )
+      . qq[  warn "Required native symbol '$sym' not found in running perl;]
+      . qq[ installation can't continue.\\n"; exit\n]
+      . "}\n"
     ; 
   }
 
   for my $item ($self->lacks_symbol) {
     my ($sym, $platform) = split ' ', $item;
-    $insert .= $platform ?
+    $insert .= 
+      ( $platform ?
         "if (\$^O =~ /$platform/ && \$ffi->find_symbol('$sym')) {\n"
-        . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
-        . qq[ installation can't continue.\\n"; exit\n]
-        . "}\n"
-      : "if (\$ffi->find_symbol('$sym')) {\n"
-        . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
-        . qq[ installation can't continue.\\n"; exit\n]
-        . "}\n"
+        : "if (\$ffi->find_symbol('$sym')) {\n"
+      )
+      . qq[  warn "Conflicting native symbol '$sym' found in running perl;]
+      . qq[ installation can't continue.\\n"; exit\n]
+      . "}\n"
     ;
   }
   
